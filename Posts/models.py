@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import Value, F, CharField
 from django.db.models.functions import Concat
 from django.utils import timezone
-from Accounts.models import User
+# from Accounts.models import User
 from django.utils.translation import gettext_lazy as _
 import jdatetime
 
@@ -26,7 +26,7 @@ class Post(models.Model):
     image = models.ImageField(blank=True,null=True,default="default.png")
     status=models.IntegerField(validators=[validate1or2],null=False)
     dateOfPublish = models.DateTimeField(default=timezone.now,editable=False)
-    author = models.ForeignKey(User,on_delete=models.CASCADE)
+    # author = models.ForeignKey(User,on_delete=models.CASCADE)
     persian_date = models.CharField(max_length=10, blank=True, null=True,editable=False)
     image_url = models.TextField(null=True)
 
@@ -63,7 +63,7 @@ class Tag(models.Model):
 
 class Comments(models.Model):
     post_id=models.ForeignKey(Post,on_delete=models.CASCADE)
-    user_id=models.ForeignKey(User,on_delete=models.CASCADE,verbose_name="id")
+    # user_id=models.ForeignKey(User,on_delete=models.CASCADE,verbose_name="id")
     text=models.TextField()
     parent_id=models.IntegerField(default=0,null=True)
 
