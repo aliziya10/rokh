@@ -1,0 +1,8 @@
+{% extends '_base.html' %}
+{% block body %}
+    {% for i in product %}
+        <a href="{% url 'home:detail' i.id %}">
+        <h2>{{ i.name }}</h2>
+        </a>
+    {% endfor %}
+{% endblock %}
