@@ -111,7 +111,6 @@ def post_list(request,page):
         paginator = Paginator(posts, 8)
         page_obj = paginator.get_page(page)
         num_pages = paginator.num_pages
-        print()
         return Response({"posts":page_obj.object_list.values("id","title","image_url"),"page_count":num_pages})
     except:
         return Response({"message":"not found."},status=status.HTTP_404_NOT_FOUND)

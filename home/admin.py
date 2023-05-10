@@ -14,7 +14,7 @@ class TeamAdmin(admin.ModelAdmin):
 
 admin.site.register(Teammate,TeamAdmin)
 
-admin.site.register(HanousaInfo)
+admin.site.register(RokhInfo)
 
 
 # admin.site.register(TicketAnswer)

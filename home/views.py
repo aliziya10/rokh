@@ -10,6 +10,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission
 from rest_framework.views import APIView
+
+from Posts.models import Post
 from home.models import *
 from django.db.models import F, OuterRef, Subquery, Q
 from django.db.models.functions import Concat
@@ -25,7 +27,7 @@ def page_home(request):
     post_count = Post.objects.count()
     request_per_day = 500
     ticket_count = ContactUs.objects.filter(is_answer=False).count()
-    form_count = Forms.objects.count()
+
 
     return Response({
         "user_count": user_count,
@@ -33,7 +35,6 @@ def page_home(request):
         "post_count": post_count,
         "request_per_day": request_per_day,
         "ticket_count": ticket_count,
-        "form_count": form_count,
     })
 
 
@@ -76,61 +77,6 @@ def admin_list(request):
         except:
             return Response({"message": "mobile not exist"})
 
-
-@api_view(["GET", "POST", "PUT", "DELETE"])
-@permission_classes([IsAuthenticated, ])
-@user_passes_test(lambda u: u.is_staff)
-def form_list(request, pk=None):
-    if request.method == "GET":
-        if pk == None:
-            forms = Forms.objects.all().values()
-            return Response(forms)
-        else:
-            try:
-                form = Forms.objects.values().get(id=pk)
-                return Response(form)
-            except:
-                return Response({"message": "id not found"})
-    elif request.method == "DELETE":
-        try:
-            form = Forms.objects.get(id=pk).delete()
-            return Response({"message": "form deleted"})
-        except:
-            return Response({"message": "id not found"})
-
-    elif request.method == "POST":
-        if "title" not in request.POST or "text" not in request.POST or "image" not in request.FILES or "status" not in request.POST:
-            return Response({"message": "enter all fields"})
-        form = Forms.objects.create(
-            title=request.POST["title"],
-            text=request.POST["text"],
-            image=request.FILES["image"],
-            status=request.POST["status"]
-        )
-        form.save()
-        form.image_url=form.image.url
-        form.save()
-        return Response({"message": "form created"})
-
-    elif request.method == "PUT":
-        try:
-            form = Forms.objects.get(id=pk)
-            if "title" in request.POST:
-                form.title = request.POST["title"]
-            if "text" in request.data:
-                form.text = request.POST["text"]
-            if "image" in request.FILES:
-                form.image = request.FILES["image"]
-                form.save()
-                form.image_url=form.image.url
-                form.save()
-            if "status" in request.POST:
-                form.status = request.POST["status"]
-
-            form.save()
-            return Response({"message": "form changed"})
-        except:
-            return Response({"message": "id not found"})
 
 
 @api_view(["GET", "PUT", "DELETE", "POST"])
