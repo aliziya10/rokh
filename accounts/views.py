@@ -1,14 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework import generics
-from rest_framework_simplejwt.tokens import RefreshToken, OutstandingToken, BlacklistedToken
+from rest_framework_simplejwt.tokens import OutstandingToken
 from rest_framework.permissions import IsAuthenticated
-from .serializers import ChangePasswordSerializer
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
 # Register API
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth.models import User
+from accounts.models import *
+from .serializers import *
 
 
 @api_view(["POST"])
@@ -68,4 +67,32 @@ class ChangePasswordView(generics.UpdateAPIView):
 
             return Response(response, status=status.HTTP_200_OK)
 
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# class ProfileViewSet(viewsets.ModelViewSet):
+#     queryset = Profile.objects.all()
+#     serializer_class = ProfileSerializer
+
+class UserCreate(APIView):
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProfileView(APIView):
+    def get(self, request):
+        profile = Profile.objects.first()  # یا هر دیگر روشی برای گرفتن پروفایل
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data)
+
+    def put(self, request):
+        profile = Profile.objects.first()  # یا هر دیگر روشی برای گرفتن پروفایل
+        serializer = ProfileSerializer(profile, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
