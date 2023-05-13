@@ -10,7 +10,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission
 from rest_framework.views import APIView
-
+from accounts.models import User
 from Posts.models import Post
 from home.models import *
 from django.db.models import F, OuterRef, Subquery, Q
@@ -22,8 +22,8 @@ from django.db.models import Value, F, CharField
 @permission_classes([IsAuthenticated, ])
 @user_passes_test(lambda u: u.is_staff)
 def page_home(request):
-    user_count = User.objects.filter(is_staff=False).count()
-    admin_count = User.objects.filter(is_staff=True).count()
+    user_count = User.objects.filter(is_active=True).count()
+    # admin_count = User.objects.filter(is_staff=True).count()
     post_count = Post.objects.count()
     request_per_day = 500
     ticket_count = ContactUs.objects.filter(is_answer=False).count()
@@ -31,7 +31,6 @@ def page_home(request):
 
     return Response({
         "user_count": user_count,
-        "admin_count": admin_count,
         "post_count": post_count,
         "request_per_day": request_per_day,
         "ticket_count": ticket_count,
@@ -43,45 +42,45 @@ def page_home(request):
 @user_passes_test(lambda u: u.is_superuser)
 def admin_list(request):
     if request.method == "GET":
-        admins = User.objects.filter(is_staff=True).values("id", "name", "mobile", "groups__name", "is_superuser")
+        admins = User.objects.values("id", "username", "mobile",'pezeshki_code', "is_active")
         return Response(admins)
 
     elif request.method == "POST":
-        if "mobile" not in request.data:
-            return Response({"message": "enter mobile"})
+        if "username" not in request.data:
+            return Response({"message": "enter username"})
         try:
-            user = User.objects.get(mobile=request.data["mobile"])
-            if user.is_staff == True:
-                return Response({"message": "this user is already staff"})
+            user = User.objects.get(username=request.data["username"])
+            if user.is_active == True:
+                return Response({"message": "this user is already active"})
             else:
-                user.is_staff = True
+                user.is_active = True
                 user.save()
-                return Response({"message": "this user now is staff"})
+                return Response({"message": "this user now is active"})
 
         except:
             return Response({"message": "mobile not exist"})
 
     elif request.method == "DELETE":
-        if "mobile" not in request.data:
-            return Response({"message": "enter mobile"})
+        if "username" not in request.data:
+            return Response({"message": "enter username"})
         try:
-            user = User.objects.get(mobile=request.data["mobile"])
+            user = User.objects.get(username=request.data["username"])
             if user.is_superuser == True:
                 return Response({"message": "you can not change a superuser"})
-            if user.is_staff == False:
-                return Response({"message": "this user is already not staff"})
+            if user.is_active == False:
+                return Response({"message": "this user is already not active"})
             else:
-                user.is_staff = False
+                user.is_active = False
                 user.save()
-                return Response({"message": "this user now is not staff"})
+                return Response({"message": "this user now is not active"})
         except:
-            return Response({"message": "mobile not exist"})
+            return Response({"message": "username not exist"})
 
 
 
 @api_view(["GET", "PUT", "DELETE", "POST"])
 @permission_classes([IsAuthenticated, ])
-@user_passes_test(lambda u: u.is_staff)
+@user_passes_test(lambda u: u.is_active)
 def slide_list(request, pk=None):
     if request.method == "GET":
         if pk is None:
@@ -142,7 +141,7 @@ def slide_list(request, pk=None):
 
 @api_view(["GET", "DELETE", "PUT", "POST"])
 @permission_classes([IsAuthenticated, ])
-@user_passes_test(lambda u: u.is_staff)
+@user_passes_test(lambda u: u.is_active)
 def menu_list(request, pk=None):
     if request.method == "GET":
         if pk == None:
@@ -196,7 +195,7 @@ def menu_list(request, pk=None):
 
 @api_view(["GET", "PUT", "DELETE","POST"])
 @permission_classes([IsAuthenticated, ])
-@user_passes_test(lambda u: u.is_staff)
+@user_passes_test(lambda u: u.is_active)
 def tickets_list(request, pk=None):
     if request.method == "GET":
         if pk == None:
@@ -406,14 +405,14 @@ def teammate_list(request, pk=None):
 def mainsettings(request):
     if request.method == "GET":
         try:
-            info = HanousaInfo.objects.values().get(id=1)
+            info = RokhInfo.objects.values().get(id=1)
             return Response(info)
         except:
             return Response({"massage": "enter information"})
 
     elif request.method == "PUT":
         try:
-            info = HanousaInfo.objects.get(id=1)
+            info = RokhInfo.objects.get_or_create(id=1)
             if "name" in request.POST:
                 info.name = request.POST["name"]
             if "number" in request.POST:
