@@ -84,7 +84,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'todo.wsgi.application'
+WSGI_APPLICATION = 'rokh.wsgi.application'
 
 
 # Database

@@ -1,8 +1,8 @@
 from rest_framework.views import APIView
-from rest_framework import generics
 from rest_framework_simplejwt.tokens import OutstandingToken
 from rest_framework.permissions import IsAuthenticated
 # Register API
+from rest_framework import generics, permissions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -83,16 +83,40 @@ class UserCreate(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ProfileView(APIView):
-    def get(self, request):
-        profile = Profile.objects.first()  # یا هر دیگر روشی برای گرفتن پروفایل
-        serializer = ProfileSerializer(profile)
-        return Response(serializer.data)
+# class ProfileView(APIView):
+#     def get(self, request):
+#         profile = Profile.objects.first()  # یا هر دیگر روشی برای گرفتن پروفایل
+#         serializer = ProfileSerializer(profile)
+#         return Response(serializer.data)
+#
+#     def put(self, request):
+#         profile = Profile.objects.first()  # یا هر دیگر روشی برای گرفتن پروفایل
+#         serializer = ProfileSerializer(profile, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def put(self, request):
-        profile = Profile.objects.first()  # یا هر دیگر روشی برای گرفتن پروفایل
-        serializer = ProfileSerializer(profile, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ProfileView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user.profile
+
+
+class CreateProfileView(generics.CreateAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class UpdateProfileView(generics.UpdateAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user.profile
