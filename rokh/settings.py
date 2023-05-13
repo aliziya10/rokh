@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'django_rest_passwordreset',
     'accounts',
-
+    'storages',
 
 
 
@@ -106,12 +106,25 @@ MEDIA_ROOT=os.path.join(BASE_DIR,"mediafiles")
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'sharp_khorana',
+        'USER': 'root',
+        'PASSWORD': 'XiyzrC4CdxGCAGfOZwERphvL',
+        # 'HOST': 'hanousa-db', #ip host
+        # 'PORT': '3306',
+        'HOST': 'esme.iran.liara.ir',
+        'PORT': '34273',
+}}
+
 
 
 
@@ -163,12 +176,13 @@ USE_I18N = True
 
 USE_TZ = True
 
+AUTH_USER_MODEL = "accounts.User"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
-
+STATIC_URL = '/static/'
+STATIC_ROOT= '/static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -178,3 +192,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ORIGIN_WHITELIST = [
      'http://localhost:3000',
 ]
+
+
+# AWS_S3_ENDPOINT_URL = "https://storage.iran.liara.space"
+# AWS_STORAGE_BUCKET_NAME = "rokhkey"
+# # AWS_ACCESS_KEY_ID = os.environ.get('98mbav9ubmnmo5fi')
+# # AWS_SECRET_ACCESS_KEY = os.environ.get('18db5778-c334-4ec8-a1c6-0b39731564d3')fim
+# AWS_ACCESS_KEY_ID ='hbur7r0ke6lte1b5'
+# AWS_SECRET_ACCESS_KEY = '898e9865-09b6-4aef-9815-e540d6109c18'
+# AWS_S3_OBJECT_PARAMETERS = {
+#   'CacheControl': 'max-age=86400',
+# }
+# AWS_LOCATION = 'static'
+# # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'

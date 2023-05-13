@@ -8,8 +8,49 @@ from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import post_save
 
 
+class CustomUser(BaseUserManager):
+    def _create_user(self, username, password, email, **extra_fields):
+        if not username:
+            raise ValueError("username must be provided")
 
-class User(AbstractBaseUser):
+        if not password:
+            raise ValueError("Password is not provided")
+
+        if email != "":
+
+            user = self.model(
+                username=username,
+                email=self.normalize_email(email)
+                , **extra_fields,
+            )
+
+        else:
+            user = self.model(
+                username=username,
+                **extra_fields,
+            )
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_user(self, username, password, email, **extra_fields):
+        extra_fields.setdefault('is_staff', False)
+        extra_fields.setdefault('is_active', False)
+        extra_fields.setdefault('is_superuser', False)
+        # extra_fields.setdefault("is_admin",False)
+        return self._create_user(username, password, email, **extra_fields)
+
+    def create_superuser(self, username, password, email, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('is_superuser', True)
+        # extra_fields.setdefault("is_admin",True)
+        return self._create_user(username, password, email, **extra_fields)
+
+    def __str__(self):
+        return str(self.mobile)
+
+class User(AbstractBaseUser,PermissionsMixin):
     username = models.CharField(db_index=True, max_length=50, unique=True, blank=False, null=False)
     pezeshki_code = models.IntegerField(verbose_name='شماره نظام پزشکی', blank=True, null=True, )
     email = models.EmailField(unique=False, max_length=50, blank=True, null=True, default=None)
@@ -19,11 +60,15 @@ class User(AbstractBaseUser):
     is_active = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ["name", 'password']
+    REQUIRED_FIELDS = ["email",'password']
+    objects = CustomUser()
 
     def __str__(self):
         return str(self.username)
 
+    class Meta:
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
 
 class Profile(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
