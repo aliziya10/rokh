@@ -62,13 +62,20 @@ class User(AbstractBaseUser,PermissionsMixin):
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ["email",'password']
     objects = CustomUser()
-
     def __str__(self):
         return str(self.username)
 
     class Meta:
         verbose_name = 'User'
         verbose_name_plural = 'Users'
+
+
+class Expertise(models.Model):
+    name = models.CharField(max_length=100,unique=True)
+
+    def __str__(self):
+        return self.name
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
@@ -77,6 +84,7 @@ class Profile(models.Model):
     Bio = models.TextField(null=True,blank=True)
     birth_date = models.DateField(null=True, blank=True)
     profile_image = models.ImageField(upload_to='profile/',null=True,blank=True)
+    expertise=models.ManyToManyField(Expertise)
 
     def __str__(self):
         return self.user.username
