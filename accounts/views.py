@@ -19,14 +19,14 @@ def signup(request):
     password2 = request.data["password2"]
 
     if password != password2:
-        return Response({"message": "passwords not match"})
+        return Response({"message": "passwords not match", "status": False})
 
     user = User.objects.create(
         username=name,
     )
     user.set_password(password)
     user.save()
-    return Response({"message": "user created"})
+    return Response({"message": "user created","status":True})
 
 
 class Logoutview(APIView):
@@ -35,7 +35,7 @@ class Logoutview(APIView):
     def post(self, request):
         OutstandingToken.objects.filter(user=request.user).delete()
 
-        return Response({"message": 'user logout'})
+        return Response({"message": 'user logout',"status":True})
 
 
 class ChangePasswordView(generics.UpdateAPIView):
@@ -57,12 +57,12 @@ class ChangePasswordView(generics.UpdateAPIView):
         if serializer.is_valid():
             # Check old password
             if not self.object.check_password(serializer.data.get("old_password")):
-                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"old_password": ["Wrong password."],"status":False}, status=status.HTTP_400_BAD_REQUEST)
             # set_password also hashes the password that the user will get
             self.object.set_password(serializer.data.get("new_password"))
             self.object.save()
             response = {
-                'message': 'Password updated successfully',
+                'message': 'Password updated successfully','status':True
             }
 
             return Response(response, status=status.HTTP_200_OK)
