@@ -54,7 +54,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     username = models.CharField(db_index=True, max_length=50, unique=True, blank=False, null=False)
     pezeshki_code = models.IntegerField(verbose_name='شماره نظام پزشکی', blank=True, null=True, )
     email = models.EmailField(unique=False, max_length=50, blank=True, null=True, default=None)
-    phone = models.BigIntegerField(verbose_name='موبایل', blank=True, null=True, )
+    phone = models.TextField(verbose_name='موبایل', blank=True, null=True, )
     last_login = models.DateTimeField(_("last login"), default=timezone.now, editable=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
@@ -70,6 +70,15 @@ class User(AbstractBaseUser,PermissionsMixin):
         verbose_name_plural = 'Users'
 
 
+class Exapmle(models.Model):
+    text=models.TextField(null=True)
+    image=models.ImageField(null=True)
+
+
+    def __str__(self):
+        return self.text[:20]
+
+
 class Expertise(models.Model):
     name = models.CharField(max_length=100,unique=True)
 
@@ -78,13 +87,14 @@ class Expertise(models.Model):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User,on_delete=models.CASCADE)
-    phone = models.IntegerField(null=True,blank=True)
+    user = models.OneToOneField(User,on_delete=models.CASCADE,primary_key=True)
     address = models.TextField(null=True,blank=True)
-    Bio = models.TextField(null=True,blank=True)
-    birth_date = models.DateField(null=True, blank=True)
+    working_hour=models.TextField(null=True,max_length=120)
+    bio = models.TextField(null=True,blank=True)
+    birth_year = models.TextField(null=True, blank=True)
     profile_image = models.ImageField(upload_to='profile/',null=True,blank=True)
     expertise=models.ManyToManyField(Expertise)
+
 
     def __str__(self):
         return self.user.username

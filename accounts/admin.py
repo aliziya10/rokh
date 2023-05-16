@@ -39,3 +39,5 @@ class Usera(UserAdmin):
 
 
 admin.site.register(User,Usera)
+
+admin.site.register(Expertise)

@@ -14,12 +14,19 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    is_superuser = serializers.SerializerMethodField()
+    username = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
-        fields = ('id', 'user', 'Bio', 'address', 'phone','profile_image')
+        fields = ('user_id','username','bio', 'is_superuser','address','profile_image')
 
+    def get_is_superuser(self, obj):
+        return obj.user.is_superuser
+
+    def get_username(self,obj):
+        return obj.user.username
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
