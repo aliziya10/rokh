@@ -70,20 +70,25 @@ class User(AbstractBaseUser,PermissionsMixin):
         verbose_name_plural = 'Users'
 
 
-class Exapmle(models.Model):
-    text=models.TextField(null=True)
-    image=models.ImageField(null=True)
-
-
-    def __str__(self):
-        return self.text[:20]
-
-
 class Expertise(models.Model):
     name = models.CharField(max_length=100,unique=True)
 
+
     def __str__(self):
         return self.name
+
+
+class Example(models.Model):
+    text=models.TextField(null=True)
+    image=models.ImageField(null=True)
+    expertise=models.ForeignKey(Expertise,on_delete=models.CASCADE)
+    doctor=models.ForeignKey(User,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.doctor.username+' : '+self.text[:20]
+
+
+
 
 
 class Profile(models.Model):
