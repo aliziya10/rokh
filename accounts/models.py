@@ -87,7 +87,7 @@ class Expertise(models.Model):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User,on_delete=models.CASCADE,primary_key=True)
+    user = models.OneToOneField(User,on_delete=models.CASCADE)
     address = models.TextField(null=True,blank=True)
     working_hour=models.TextField(null=True,max_length=120)
     bio = models.TextField(null=True,blank=True)

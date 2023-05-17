@@ -30,44 +30,19 @@ def contactus(request):
 @api_view(["GET"])
 def home(request):
     res={}
-    base_url = "https://server.hanousa.ir/images/"
-
-
-    # slides=Slides.objects.filter(status=1).values()
-    #     .annotate(
-    #     image_url=F('image__url')
-    # )
-
-    # for slide in slides:
-    #     slides['image_url'] = slide['image']
-        # del slide['image']
-
-    # res.append({"slides":slides.values()}) #for return dict in api
-
-    # res["slides"]=slides.values("id","title","text")
-
-    # image_url = Slides.objects.filter(pk=OuterRef('pk')).values('image').get(ima)
+    base_url = "https://storage.iran.liara.space/hanousa/static/"
 
     slides = Slides.objects.filter(status=1)
-    for slide in slides:
-        slide.image_url=slide.image.url
-        slide.save()
 
     res["slides"]=slides.values()
 
     posts = Post.objects.filter(status=1)
-    for post in posts:
-        post.image_url=post.image.url
-        post.save()
 
     res["posts"]=posts.values('id',"title","sub_title","image_url","persian_date","author__name").order_by("-id")[:3]
 
 
 
     teammates=Teammate.objects.all()
-    for team in teammates:
-        team.image_url=team.image.url
-        team.save()
 
     res["teammates"]=teammates.values("id","image_url","label","link")
 
@@ -77,7 +52,7 @@ def home(request):
 @api_view(["GET"])
 def layout(request):
     menus = list(Menu.objects.values())
-    settings=HanousaInfo.objects.values()
+    settings=RokhInfo.objects.values()
     return Response({"menus": menus,"settings":settings})
 
 @api_view(["GET"])
