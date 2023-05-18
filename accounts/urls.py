@@ -1,13 +1,8 @@
 from rest_framework_simplejwt import views as jwt_views
-from .views import *
-from django.urls import path
-
+from . import views
 from django.urls import path, include
-from rest_framework import routers
 from .views import *
-#
-# router = routers.DefaultRouter()
-# router.register(r'user-profiles', ProfileViewSet)
+
 
 app_name = 'accounts'
 urlpatterns = [
@@ -16,8 +11,8 @@ urlpatterns = [
     path('signup/',signup),
     path('logout/', Logoutview.as_view(), name='logout'),
     path('change/', ChangePasswordView.as_view(), name='change-password'),
-    # path('', include(router.urls)),
-    path('profile/', ProfileView.as_view()),
-    path('profile/create/', CreateProfileView.as_view(), name='create_profile'),
-    path('profile/update/', UpdateProfileView.as_view(), name='update_profile'),
+    path('profile/',views.ProfileDispatcher.as_view(),name="profile_dispathcher"),
+    # path('profile/', ProfileView.as_view()),
+    # path('profile/create/', CreateProfileView.as_view(), name='create_profile'),
+    # path('profile/update/', UpdateProfileView.as_view(), name='update_profile'),
 ]

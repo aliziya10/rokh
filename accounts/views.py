@@ -83,19 +83,22 @@ class UserCreate(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# class ProfileView(APIView):
-#     def get(self, request):
-#         profile = Profile.objects.first()  # یا هر دیگر روشی برای گرفتن پروفایل
-#         serializer = ProfileSerializer(profile)
-#         return Response(serializer.data)
-#
-#     def put(self, request):
-#         profile = Profile.objects.first()  # یا هر دیگر روشی برای گرفتن پروفایل
-#         serializer = ProfileSerializer(profile, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#profile_create_update_see
+class ProfileDispatcher(APIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        return ProfileView.as_view()(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return CreateProfileView.as_view()(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return UpdateProfileView.as_view()(request, *args, **kwargs)
+
+
 
 
 class ProfileView(generics.RetrieveUpdateDestroyAPIView):
