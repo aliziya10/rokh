@@ -1,6 +1,7 @@
 import math
 
 from django.core.paginator import Paginator
+from django.db.models import OuterRef, Subquery
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import permission_classes, api_view
@@ -9,6 +10,7 @@ from rest_framework.response import Response
 
 from home.models import *
 from Posts.models import *
+from accounts.models import *
 
 @permission_classes([AllowAny])
 @api_view(["POST","GET"])
@@ -32,18 +34,27 @@ def home(request):
     res={}
     base_url = "https://storage.iran.liara.space/hanousa/static/"
 
+    url = "https://server.rokhdental.ir/images/"
+
     slides = Slides.objects.filter(status=1)
 
     res["slides"]=slides.values()
 
     posts = Post.objects.filter(status=1)
 
-    res["posts"]=posts.values('id',"title","sub_title","image_url","persian_date",'author__username').order_by("-id")[:3]
+    res["posts"]=posts.annotate(
+        img=Subquery(
+                    ImagePost.objects.filter(post_id=OuterRef('id')).values('image')[:1]
+                )
+    ).values('id',"title","sub_title",'img',"persian_date",'author__username').order_by("-id")[:3]
 
 
 
-    # teammates=Teammate.objects.all()
-    #
+    ex=Expertise.objects.values('id','name')[:4]
+
+    res['example']=ex
+
+
     # res["teammates"]=teammates.values("id","image_url","label","link")
 
 

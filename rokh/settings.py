@@ -107,24 +107,24 @@ MEDIA_ROOT=os.path.join(BASE_DIR,"mediafiles")
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sharp_khorana',
-        'USER': 'root',
-        'PASSWORD': 'XiyzrC4CdxGCAGfOZwERphvL',
-        # 'HOST': 'hanousa-db', #ip host
-        # 'PORT': '3306',
-        'HOST': 'esme.iran.liara.ir',
-        'PORT': '34273',
-}}
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'mediafiles/db.sqlite3',
+    }
+}
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'sharp_khorana',
+#         'USER': 'root',
+#         'PASSWORD': 'XiyzrC4CdxGCAGfOZwERphvL',
+#         # 'HOST': 'hanousa-db', #ip host
+#         # 'PORT': '3306',
+#         'HOST': 'esme.iran.liara.ir',
+#         'PORT': '34273',
+# }}
 
 
 

@@ -52,6 +52,7 @@ class CustomUser(BaseUserManager):
 
 class User(AbstractBaseUser,PermissionsMixin):
     username = models.CharField(db_index=True, max_length=50, unique=True, blank=False, null=False)
+    name=models.CharField(max_length=50,null=True,blank=True)
     pezeshki_code = models.IntegerField(verbose_name='شماره نظام پزشکی', blank=True, null=True, )
     email = models.EmailField(unique=False, max_length=50, blank=True, null=True, default=None)
     phone = models.TextField(verbose_name='موبایل', blank=True, null=True, )

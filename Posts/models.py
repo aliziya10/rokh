@@ -81,3 +81,5 @@ class Comments(models.Model):
     text=models.TextField()
     parent_id=models.IntegerField(default=0,null=True)
 
+    def __str__(self):
+        return self.text[:20]
