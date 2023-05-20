@@ -25,9 +25,13 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('home/',home),
     path('page/',include("home.urls")),
     path('post_list/<page>/',post_list),
     path('accounts/',include('accounts.urls',namespace='accounts')),
+    path('layout/',layout),
+    path('contactus/',contactus),
+
 ]
 
 if settings.DEBUG:

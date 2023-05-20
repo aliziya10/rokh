@@ -38,13 +38,13 @@ def home(request):
 
     posts = Post.objects.filter(status=1)
 
-    res["posts"]=posts.values('id',"title","sub_title","image_url","persian_date","author__name").order_by("-id")[:3]
+    res["posts"]=posts.values('id',"title","sub_title","image_url","persian_date",'author__username').order_by("-id")[:3]
 
 
 
-    teammates=Teammate.objects.all()
-
-    res["teammates"]=teammates.values("id","image_url","label","link")
+    # teammates=Teammate.objects.all()
+    #
+    # res["teammates"]=teammates.values("id","image_url","label","link")
 
 
     return Response(res)
@@ -63,7 +63,7 @@ def special_post(request,adressurl):
 
     try:
 
-        posts = Post.objects.values("id","title","text","sub_title","image_url","persian_date","author__name").get(id=adressurl)
+        posts = Post.objects.values("id","title","text","sub_title","image_url","persian_date","author__username").get(id=adressurl)
 
         # image_url=Concat(Value(base_url), F('image'), output_field=CharField()),
 

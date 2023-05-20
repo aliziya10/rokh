@@ -1,0 +1,9 @@
+{
+    "app":"rokhserver",
+    "disks":[
+        {
+            "name":"mediafiles",
+            "mountTo":"mediafiles"
+        }
+    ]
+}

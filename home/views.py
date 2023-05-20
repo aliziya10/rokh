@@ -268,13 +268,13 @@ def posts_list(request, pk=None):
         if pk is None:
             posts = Post.objects.all()
             posts=posts.annotate(
-                author_name=Concat('author__name',Value(''))
+                author_name=Concat('author__username',Value(''))
             ).values()
             return Response(posts)
         else:
             try:
                 post = Post.objects.annotate(
-                    author_name=Concat('author__name',Value(''))
+                    author_name=Concat('author__username',Value(''))
                 ).values().get(id=pk)
                 return Response(post)
             except:
