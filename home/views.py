@@ -22,15 +22,16 @@ from django.db.models import Value, F, CharField
 @permission_classes([IsAuthenticated, ])
 @user_passes_test(lambda u: u.is_staff)
 def page_home(request):
-    user_count = User.objects.filter(is_active=True).count()
-    # admin_count = User.objects.filter(is_staff=True).count()
+    doctor = User.objects.filter(is_doctor=True).count()
+    admin = User.objects.filter(is_staff=True).count()
     post_count = Post.objects.count()
     request_per_day = 500
     ticket_count = ContactUs.objects.filter(is_answer=False).count()
 
 
     return Response({
-        "user_count": user_count,
+        "doctor": doctor,
+        "admin":admin,
         "post_count": post_count,
         "request_per_day": request_per_day,
         "ticket_count": ticket_count,
@@ -40,11 +41,15 @@ def page_home(request):
 @api_view(["GET", "POST", "DELETE"])
 @permission_classes([IsAuthenticated])
 @user_passes_test(lambda u: u.is_superuser)
-def admin_list(request,pk):
-    if request.method == "GET":
-        admins = User.objects.values("id", "username", "mobile",'pezeshki_code', "is_active",'is_doctor','is_superuser','is_staff')
-        return Response(admins)
+def admin_list(request,pk=None):
 
+    if request.method == "GET":
+        if pk == None:
+            admins = User.objects.values("id", "username", "phone", "is_active",'is_doctor','is_superuser','is_staff')
+            return Response(admins)
+        else:
+            user=User.objects.values().get(id=pk)
+            return Response(user)
     elif request.method == "POST":
         if "username" not in request.data:
             return Response({"message": "enter username"})
@@ -78,9 +83,19 @@ def admin_list(request,pk):
 
     elif request.method=="PUT":
         try:
+            user=User.objects.get(id=pk)
             if "is_doctor" in request.data:
-
-
+                user.is_doctor=request.data["is_doctor"]
+            if "is_superuser" in request.data:
+                user.is_superuser=request.data["is_superuser"]
+            if 'is_staff' in request.data:
+                user.is_staff=request.data["is_staff"]
+            if 'is_active' in request.data:
+                user.is_active = request.data["is_active"]
+            user.save()
+            return Response({"message": "user changed"})
+        except:
+            return Response({"message":"user not found"})
 
 
 @api_view(["GET", "PUT", "DELETE", "POST"])

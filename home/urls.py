@@ -9,6 +9,7 @@ urlpatterns = [
 
     path('home/',page_home),
     path('admins/',admin_list),
+    path('admins/<int:pk>/',admin_list),
     # path('forms/<int:pk>/',form_list),
     # re_path('menus/(?P<pk>[0-9])?/', menu_list),
     path('menus/<int:pk>/',menu_list),
