@@ -19,7 +19,7 @@ class Usera(UserAdmin):
     # readonly_fields = ('password',)
     fieldsets = (
             ("Specifications", {"fields": ("username","phone","password","email")}),
-            ("Permissions", {"fields": ("groups","user_permissions","is_staff", "is_active","is_superuser")}),
+            ("Permissions", {"fields": ("groups","user_permissions","is_staff", "is_active","is_superuser",'is_doctor')}),
     )
 
     # add_fieldsets = (
@@ -31,7 +31,7 @@ class Usera(UserAdmin):
     # )
     add_fieldsets = (
         ("Specifications", {"fields": ("username","phone","password1","password2", "email")}),
-        ("Permissions", {"fields": ("groups", 'user_permissions',"is_staff", "is_active", "is_superuser")}),
+        ("Permissions", {"fields": ("groups", 'user_permissions',"is_staff", "is_active", "is_superuser",'is_doctor')}),
     )
     # radio_fields = {"group": admin.VERTICAL}
 

@@ -40,9 +40,9 @@ def page_home(request):
 @api_view(["GET", "POST", "DELETE"])
 @permission_classes([IsAuthenticated])
 @user_passes_test(lambda u: u.is_superuser)
-def admin_list(request):
+def admin_list(request,pk):
     if request.method == "GET":
-        admins = User.objects.values("id", "username", "mobile",'pezeshki_code', "is_active")
+        admins = User.objects.values("id", "username", "mobile",'pezeshki_code', "is_active",'is_doctor','is_superuser','is_staff')
         return Response(admins)
 
     elif request.method == "POST":
@@ -75,6 +75,11 @@ def admin_list(request):
                 return Response({"message": "this user now is not active"})
         except:
             return Response({"message": "username not exist"})
+
+    elif request.method=="PUT":
+        try:
+            if "is_doctor" in request.data:
+
 
 
 

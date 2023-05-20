@@ -17,16 +17,27 @@ class ProfileSerializer(serializers.ModelSerializer):
     user_id = serializers.PrimaryKeyRelatedField(read_only=True)
     is_superuser = serializers.SerializerMethodField()
     username = serializers.SerializerMethodField()
+    is_staff=serializers.SerializerMethodField()
+    is_doctor=serializers.SerializerMethodField()
+
+
 
     class Meta:
         model = Profile
-        fields = ('user_id','username','bio', 'is_superuser','address','profile_image')
-
+        fields = ('user_id','username','name','is_staff',"is_doctor",'is_superuser','bio','profile_image','expertise')
+    #
     def get_is_superuser(self, obj):
         return obj.user.is_superuser
-
+    #
     def get_username(self,obj):
         return obj.user.username
+    #
+    def get_is_staff(self,obj):
+        return obj.user.is_staff
+
+    def get_is_doctor(self,obj):
+        return obj.user.is_doctor
+
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)

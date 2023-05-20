@@ -84,19 +84,18 @@ class UserCreate(APIView):
 
 
 
-#profile_create_update_see
-class ProfileDispatcher(APIView):
-    serializer_class = ProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request, *args, **kwargs):
-        return ProfileView.as_view()(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return CreateProfileView.as_view()(request, *args, **kwargs)
-
-    def put(self, request, *args, **kwargs):
-        return UpdateProfileView.as_view()(request, *args, **kwargs)
+# class ProfileDispatcher(APIView):
+#     serializer_class = ProfileSerializer
+#     permission_classes = [permissions.IsAuthenticated]
+#
+#     def get(self, request, *args, **kwargs):
+#         return ProfileView.as_view()(request, *args, **kwargs)
+#
+#     def post(self, request, *args, **kwargs):
+#         return CreateProfileView.as_view()(request, *args, **kwargs)
+#
+#     def put(self, request, *args, **kwargs):
+#         return UpdateProfileView.as_view()(request, *args, **kwargs)
 
 
 

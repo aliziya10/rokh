@@ -37,13 +37,15 @@ class CustomUser(BaseUserManager):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_active', False)
         extra_fields.setdefault('is_superuser', False)
-        # extra_fields.setdefault("is_admin",False)
+        extra_fields.setdefault('is_doctor', False)
         return self._create_user(username, password, email, **extra_fields)
 
     def create_superuser(self, username, password, email, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_active', True)
         extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_doctor', True)
+
         # extra_fields.setdefault("is_admin",True)
         return self._create_user(username, password, email, **extra_fields)
 
@@ -52,13 +54,12 @@ class CustomUser(BaseUserManager):
 
 class User(AbstractBaseUser,PermissionsMixin):
     username = models.CharField(db_index=True, max_length=50, unique=True, blank=False, null=False)
-    name=models.CharField(max_length=50,null=True,blank=True)
-    pezeshki_code = models.IntegerField(verbose_name='شماره نظام پزشکی', blank=True, null=True, )
     email = models.EmailField(unique=False, max_length=50, blank=True, null=True, default=None)
     phone = models.TextField(verbose_name='موبایل', blank=True, null=True, )
     last_login = models.DateTimeField(_("last login"), default=timezone.now, editable=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
+    is_doctor=models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ["email",'password']
@@ -94,6 +95,8 @@ class Example(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
+    pezeshki_code = models.IntegerField(verbose_name='شماره نظام پزشکی', blank=True, null=True, )
+    name=models.CharField(max_length=50,null=True,blank=True)
     working_hour=models.TextField(null=True,max_length=120)
     bio = models.TextField(null=True,blank=True)
     birth_year = models.TextField(null=True, blank=True)
