@@ -17,6 +17,7 @@ from django.db.models import F, OuterRef, Subquery, Q
 from django.db.models.functions import Concat
 from django.db.models import Value, F, CharField
 from accounts.models import *
+from accounts.serializers import *
 
 
 @api_view(["GET"])
@@ -453,12 +454,22 @@ def mainsettings(request):
         except:
             return Response({"massage": "enter information"})
 
-@api_view(["GET"])
-def doctor_profile(request, id):
-    if request.method == "GET":
+# @api_view(["GET"])
+# def doctor_profile(request, id):
+#     if request.method == "GET":
+#         try:
+#             doctr = Profile.objects.values("name", 'bio', "pezeshki_code", "profile_image", 'working_hour', "expertise",
+#                                            "birth_year").get(id=id)
+#             return Response(doctr, status=200)
+#         except:
+#             return Response({"massage": "doctr is not exsit"})
+
+
+class DrProfileView(APIView):
+    def get(self, request, id):
         try:
-            doctr = Profile.objects.values("name", 'bio', "pezeshki_code", "profile_image", 'working_hour', "expertise",
-                                           "birth_year").get(id=id)
-            return Response(doctr, status=200)
-        except:
-            return Response({"massage": "doctr is not exsit"})
+            profile = Profile.objects.get(id=id)
+            serializer = ProfileSerializer(profile)
+            return Response(serializer.data)
+        except Profile.DoesNotExist:
+            return Response({'error': 'DrProfile not found'}, status=404)

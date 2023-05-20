@@ -25,7 +25,7 @@ urlpatterns = [
     path('teammates/<int:pk>/', teammate_list),
     path('teammates/', teammate_list),
     # path('otps/', seeredis),
-    path('doctr/<int:id>/',doctor_profile,),
+    path('doctor/<int:id>/',DrProfileView,),
 
 ]
 
