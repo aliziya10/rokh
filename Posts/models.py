@@ -1,3 +1,4 @@
+from ckeditor.fields import RichTextField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Value, F, CharField
@@ -23,7 +24,7 @@ class Post(models.Model):
     title = models.CharField(max_length=80,blank=False,null=True)
     sub_title=models.CharField(max_length=80,null=False)
     text=models.TextField()
-    # image = models.ImageField(blank=True,null=True,default="default.png")
+    image = models.ImageField(blank=True,null=True)
     status=models.IntegerField(validators=[validate1or2],null=False)
     dateOfPublish = models.DateTimeField(default=timezone.now,editable=False)
     author = models.ForeignKey(User,on_delete=models.CASCADE)
@@ -49,7 +50,12 @@ class Post(models.Model):
         ]
 
 
+class ImagePost(models.Model):
+    image=models.ImageField(upload_to='post/',null=False)
+    post=models.ForeignKey(Post,on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.image.url
 
 
 class Tag(models.Model):
@@ -62,17 +68,6 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.tag
-
-
-class ImagePost(models.Model):
-    image=models.ImageField(upload_to='post/',null=False)
-    post=models.ForeignKey(Post,on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.image.url
-
-
-
 
 
 class Comments(models.Model):

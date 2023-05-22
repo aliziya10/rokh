@@ -1,9 +1,20 @@
 from django.contrib import admin
 from django.urls import path, re_path,include
+from rest_framework import routers
+
+from Posts.views import PostViewSet
 from .views import *
 
 
 app_name="home"
+
+
+router = routers.DefaultRouter()
+router.register(r'', PostViewSet)
+
+r2 = routers.DefaultRouter()
+r2.register(r'',Exampleclass)
+
 
 urlpatterns = [
 
@@ -25,7 +36,13 @@ urlpatterns = [
     path('teammates/<int:pk>/', teammate_list),
     path('teammates/', teammate_list),
     # path('otps/', seeredis),
-    path('doctor/<int:id>/',DrProfileView,),
+    path('doctor/<int:id>/',DrProfileView.as_view(),),
+    path('postimage/',include(router.urls)),
+    path('expertise/<int:pk>/', expertise_list),
+    path('expertise/', expertise_list),
+    # path('expertise/<int:pk>/', expertise_list),
+    path('example/', include(r2.urls)),
+    # path('example/', example_list),
 
 ]
 

@@ -53,8 +53,8 @@ INSTALLED_APPS = [
     'django_rest_passwordreset',
     'accounts',
     # 'storages',
-    'patient'
-
+    # 'patient',
+    'ckeditor',
 
 
 
@@ -62,8 +62,13 @@ INSTALLED_APPS = [
 
 ]
 
+
+CKEDITOR_UPLOAD_PATH = 'uploads/'
+CKEDITOR_IMAGE_BACKEND = 'pillow'
+
+
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
 }
 
@@ -102,7 +107,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'rokh.wsgi.application'
 MEDIA_ROOT=os.path.join(BASE_DIR,"mediafiles")
-
+MEDIA_URL='/images/'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -136,13 +141,13 @@ REST_FRAMEWORK ={
 
 
     'DEFAULT_PERMISSION_CLASSES': [
-            # 'rest_framework.permissions.IsAuthenticated'
+            'rest_framework.permissions.IsAuthenticated'
         ],
 
         'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        # 'rest_framework.authentication.TokenAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
 
         ],
 }

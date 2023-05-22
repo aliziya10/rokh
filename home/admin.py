@@ -16,8 +16,9 @@ admin.site.register(Teammate,TeamAdmin)
 
 admin.site.register(RokhInfo)
 
+admin.site.register(ContactUs)
 
-# admin.site.register(TicketAnswer)
+admin.site.register(TicketAnswer)
 
 
 class PostAdmin(admin.ModelAdmin):

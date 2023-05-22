@@ -30,6 +30,7 @@ def contactus(request):
 
 
 @api_view(["GET"])
+@permission_classes([AllowAny])
 def home(request):
     res={}
     base_url = "https://storage.iran.liara.space/hanousa/static/"
@@ -50,9 +51,9 @@ def home(request):
 
 
 
-    ex=Expertise.objects.values('id','name')[:4]
+    ex=Expertise.objects.values('id','title')[:4]
 
-    res['example']=ex
+    res['expertise']=ex
 
 
     # res["teammates"]=teammates.values("id","image_url","label","link")
@@ -61,6 +62,7 @@ def home(request):
     return Response(res)
 
 @api_view(["GET"])
+@permission_classes([AllowAny])
 def layout(request):
     menus = list(Menu.objects.values())
     settings=RokhInfo.objects.values()

@@ -1,17 +1,18 @@
+from PIL.PngImagePlugin import _idat
 from django.contrib.auth.decorators import user_passes_test
 from django.db.models.functions import Concat
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse, FileResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
-from rest_framework import renderers, status
+from rest_framework import renderers, status, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission
 from rest_framework.views import APIView
 from accounts.models import User
-from Posts.models import Post
+from Posts.models import Post,ImagePost
 from home.models import *
 from django.db.models import F, OuterRef, Subquery, Q
 from django.db.models.functions import Concat
@@ -40,7 +41,7 @@ def page_home(request):
     })
 
 
-@api_view(["GET", "POST", "DELETE"])
+@api_view(["GET", "POST", "DELETE","PUT"])
 @permission_classes([IsAuthenticated])
 @user_passes_test(lambda u: u.is_superuser)
 def admin_list(request,pk=None):
@@ -53,25 +54,34 @@ def admin_list(request,pk=None):
             user=User.objects.values().get(id=pk)
             return Response(user)
     elif request.method == "POST":
-        if "username" not in request.data:
-            return Response({"message": "enter username"})
+        if "username" not in request.data or "password" not in request.data or "password2" not in request.data or "is_doctor" not in request.data or "is_staff" not in request.data:
+            return Response({"message": "fill all fields"})
+        name = request.data["username"]
+        password = request.data["password"]
+        password2 = request.data["password2"]
+        is_doctor= request.data["is_doctor"]
+        is_staff= request.data["is_staff"]
+
+
+        if password != password2:
+            return Response({"message": "passwords not match"})
+
         try:
-            user = User.objects.get(username=request.data["username"])
-            if user.is_active == True:
-                return Response({"message": "this user is already active"})
-            else:
-                user.is_active = True
-                user.save()
-                return Response({"message": "this user now is active"})
+            user = User.objects.create(
+                username=name,
+                is_staff=is_staff,
+                is_doctor=is_doctor
+            )
+            user.set_password(password)
+            user.save()
+            return Response({"message": "user created"})
 
         except:
-            return Response({"message": "mobile not exist"})
+            return Response({"message":"this user is already staff"})
 
     elif request.method == "DELETE":
-        if "username" not in request.data:
-            return Response({"message": "enter username"})
         try:
-            user = User.objects.get(username=request.data["username"])
+            user = User.objects.get(id=pk)
             if user.is_superuser == True:
                 return Response({"message": "you can not change a superuser"})
             if user.is_active == False:
@@ -81,7 +91,7 @@ def admin_list(request,pk=None):
                 user.save()
                 return Response({"message": "this user now is not active"})
         except:
-            return Response({"message": "username not exist"})
+            return Response({"message": "id not exist"})
 
     elif request.method=="PUT":
         try:
@@ -102,7 +112,7 @@ def admin_list(request,pk=None):
 
 @api_view(["GET", "PUT", "DELETE", "POST"])
 @permission_classes([IsAuthenticated, ])
-@user_passes_test(lambda u: u.is_active)
+@user_passes_test(lambda u: u.is_staff)
 def slide_list(request, pk=None):
     if request.method == "GET":
         if pk is None:
@@ -163,7 +173,7 @@ def slide_list(request, pk=None):
 
 @api_view(["GET", "DELETE", "PUT", "POST"])
 @permission_classes([IsAuthenticated, ])
-@user_passes_test(lambda u: u.is_active)
+@user_passes_test(lambda u: u.is_staff)
 def menu_list(request, pk=None):
     if request.method == "GET":
         if pk == None:
@@ -268,7 +278,7 @@ def tickets_list(request, pk=None):
         try:
             answer=TicketAnswer.objects.create(
                 answer=request.data["answer"],
-                name=User.objects.get(id=request.data["id"]).name,
+                name=User.objects.get(id=request.data["id"]).username,
                 ticket_id=ContactUs.objects.get(id=pk)
             ).save()
             c=ContactUs.objects.get(id=pk)
@@ -427,14 +437,14 @@ def teammate_list(request, pk=None):
 def mainsettings(request):
     if request.method == "GET":
         try:
-            info = RokhInfo.objects.values().get(id=1)
+            info = RokhInfo.objects.values().first()
             return Response(info)
         except:
             return Response({"massage": "enter information"})
 
     elif request.method == "PUT":
         try:
-            info = RokhInfo.objects.get_or_create(id=1)
+            info = RokhInfo.objects.first()
             if "name" in request.POST:
                 info.name = request.POST["name"]
             if "number" in request.POST:
@@ -473,3 +483,174 @@ class DrProfileView(APIView):
             return Response(serializer.data)
         except Profile.DoesNotExist:
             return Response({'error': 'DrProfile not found'}, status=404)
+
+
+
+
+
+
+@api_view(["GET", "PUT", "DELETE", "POST"])
+@permission_classes([IsAuthenticated, ])
+@user_passes_test(lambda u: u.is_active)
+def expertise_list(request, pk=None):
+    if request.method == "GET":
+        if pk is None:
+            expertise = Expertise.objects.all().values()
+            return Response(expertise)
+        else:
+            try:
+                expertise = Expertise.objects.values().get(id=pk)
+                return Response(expertise)
+            except:
+                return Response({"message": "id not found"})
+    elif request.method == "DELETE":
+        try:
+            expertise = Expertise.objects.get(id=pk).delete()
+            return Response({"message": "expertise deleted"})
+        except:
+            return Response({"message": "id not found"})
+    elif request.method == "POST":
+        if "title" not in request.POST or "image" not in request.FILES:
+            return Response({"message":"enter all fields"})
+
+        try:
+            expertise = Expertise.objects.create(
+                title=request.POST["title"],
+                image=request.FILES["image"],
+            )
+            expertise.save()
+            expertise.image_url=expertise.image.url
+            if "text" in request.POST:
+                expertise.text = request.POST['text']
+
+            expertise.save()
+
+            return Response({"message": "expertise created"})
+
+        except:
+            return Response({'message':"expertise not created (for som reason)"})
+
+
+    elif request.method == "PUT":
+        try:
+            expertise = Expertise.objects.get(id=pk)
+            if "title" in request.POST:
+                expertise.title = request.POST["title"]
+            if "text" in request.POST:
+                expertise.text = request.POST["text"]
+            if "image" in request.FILES:
+                expertise.image = request.FILES["image"]
+                expertise.save()
+                expertise.image_url=expertise.image.url
+            expertise.save()
+            return Response({"message": "expertise changed"})
+        except:
+            return Response({"message": "id not found"})
+
+
+class Exampleclass(viewsets.ModelViewSet):
+    queryset = Example.objects.all()
+    serializer_class = ExampleSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(doctor=self.request.user)
+        expertise = Expertise.objects.get(id=self.request.data["expertise"])
+        serializer.save(doctor=self.request.user,expertise=expertise)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        # Assuming the `ImagePost` model has a field named `image` that stores the image
+        # You can adjust this logic based on your actual model structure
+
+        # Delete the image file from storage (assuming you are using a FileField or ImageField)
+        instance.image.delete()
+
+        self.perform_destroy(instance)
+        return Response({"message":"example deleted"})
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        data = serializer.data
+
+        # Include expertise title
+        expertise_title = instance.expertise.title if instance.expertise else None
+        data['expertise_title'] = expertise_title
+
+        return Response(data)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.queryset.filter(doctor=request.user))
+        serializer = self.get_serializer(queryset, many=True)
+        data = serializer.data
+
+        expertise_ids = [item['expertise'] for item in data if 'expertise' in item]
+        expertise_mapping = {expertise.id: expertise.title for expertise in
+                             Expertise.objects.filter(id__in=expertise_ids)}
+
+        for item in data:
+            expertise_id = item.get('expertise')
+            expertise_title = expertise_mapping.get(expertise_id)
+            item['expertise_title'] = expertise_title
+
+        return Response(data)
+
+
+@api_view(["GET", "PUT", "DELETE", "POST"])
+@permission_classes([IsAuthenticated, ])
+@user_passes_test(lambda u: u.is_active)
+def example_list(request, pk=None):
+    if request.method == "GET":
+        if pk is None:
+            example = Example.objects.filter(doctor=request.user).values('id','text','image')
+            return Response(example)
+        else:
+            try:
+                example = Example.objects.filter(doctor=request.user).values().get(id=pk)
+                return Response(example)
+            except:
+                return Response({"message": "id not found"})
+    elif request.method == "DELETE":
+        try:
+            example = Example.objects.get(id=pk).delete()
+            return Response({"message": "example deleted"})
+        except:
+            return Response({"message": "id not found"})
+    elif request.method == "POST":
+        if "title" not in request.POST or "image" not in request.FILES:
+            return Response({"message":"enter all fields"})
+
+        try:
+            example = Example.objects.create(
+                title=request.POST["title"],
+                image=request.FILES["image"],
+            )
+            example.save()
+            example.image_url=example.image.url
+            if "text" in request.POST:
+                example.text = request.POST['text']
+
+            example.save()
+
+            return Response({"message": "example created"})
+
+        except:
+            return Response({'message':"example not created (for som reason)"})
+
+
+    elif request.method == "PUT":
+        try:
+            example = Example.objects.get(id=pk)
+            if "title" in request.POST:
+                example.title = request.POST["title"]
+            if "text" in request.POST:
+                example.text = request.POST["text"]
+            if "image" in request.FILES:
+                example.image = request.FILES["image"]
+                example.save()
+                example.image_url=example.image.url
+            example.save()
+            return Response({"message": "example changed"})
+        except:
+            return Response({"message": "id not found"})

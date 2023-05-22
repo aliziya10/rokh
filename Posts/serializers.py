@@ -1,7 +1,7 @@
 from rest_framework import serializers, status
 
 
-from .models import Post
+from .models import Post,ImagePost
 
 class PostSerializer(serializers.ModelSerializer):
 
@@ -20,13 +20,10 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 
+class ImagesSerializer(serializers.ModelSerializer):
+    # text = serializers.CharField()
 
+    class Meta:
+        model = ImagePost
+        fields = '__all__'
 
-
-# class PostSerializer(serializers.Serializer):
-#     title = serializers.CharField(max_length=80, required=True)
-#     sub_title = serializers.CharField(max_length=80, required=True)
-#     text = serializers.CharField(required=True)
-#     image = serializers.ImageField(required=False)
-#     status = serializers.IntegerField(required=True)
-#     author_id = serializers.IntegerField(required=True)

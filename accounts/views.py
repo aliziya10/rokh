@@ -1,13 +1,21 @@
+from django.db.models import F
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import OutstandingToken
 from rest_framework.permissions import IsAuthenticated
 # Register API
 from rest_framework import generics, permissions
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from accounts.models import *
 from .serializers import *
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def getme(request):
+    user=User.objects.annotate(user_id=F("id")).values('user_id','username','last_login','phone','email',"is_doctor","is_superuser",'is_active','is_staff').get(id=request.user.id)
+    return Response(user)
 
 
 @api_view(["POST"])

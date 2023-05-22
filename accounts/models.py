@@ -1,3 +1,5 @@
+import json
+
 from django.db import models
 
 # Create your models here.
@@ -35,7 +37,7 @@ class CustomUser(BaseUserManager):
 
     def create_user(self, username, password, email, **extra_fields):
         extra_fields.setdefault('is_staff', False)
-        extra_fields.setdefault('is_active', False)
+        extra_fields.setdefault('is_active', True)
         extra_fields.setdefault('is_superuser', False)
         extra_fields.setdefault('is_doctor', False)
         return self._create_user(username, password, email, **extra_fields)
@@ -58,7 +60,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     phone = models.TextField(verbose_name='موبایل', blank=True, null=True, )
     last_login = models.DateTimeField(_("last login"), default=timezone.now, editable=False)
     is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     is_doctor=models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     USERNAME_FIELD = 'username'
@@ -73,11 +75,13 @@ class User(AbstractBaseUser,PermissionsMixin):
 
 
 class Expertise(models.Model):
-    name = models.CharField(max_length=100,unique=True)
-
+    title = models.CharField(max_length=100,unique=True)
+    image=models.ImageField(upload_to='expertise/',null=True)
+    text=models.TextField(null=True,blank=True)
+    image_url=models.TextField(null=True,blank=True,max_length=1000)
 
     def __str__(self):
-        return self.name
+        return self.title
 
 
 class Example(models.Model):
@@ -90,19 +94,34 @@ class Example(models.Model):
         return self.doctor.username+' : '+self.text[:20]
 
 
-
+def default_working_hours():
+    return {
+        "Saturday": "",
+        "Sunday": "",
+        "Monday": "",
+        "Tuesday": "",
+        "Wednesday": "",
+        "Thursday": "",
+        "Friday": ""
+    }
 
 
 class Profile(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
     pezeshki_code = models.IntegerField(verbose_name='شماره نظام پزشکی', blank=True, null=True, )
     name=models.CharField(max_length=50,null=True,blank=True)
-    working_hour=models.TextField(null=True,max_length=120)
+    working_hour=models.JSONField(default=default_working_hours)
     bio = models.TextField(null=True,blank=True)
     birth_year = models.TextField(null=True, blank=True)
     profile_image = models.ImageField(upload_to='profile/',null=True,blank=True)
     expertise=models.ManyToManyField(Expertise)
 
+    def save_working_hours(self, hours_dict):
+        self.working_hours = json.dumps(hours_dict)
+        self.save()
+
+    def get_working_hours(self):
+        return json.loads(self.working_hours)
 
     def __str__(self):
         return self.user.username
