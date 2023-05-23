@@ -139,7 +139,7 @@ def slide_list(request, pk=None):
                 title=request.POST["title"],
                 text=request.POST["text"],
                 image=request.FILES["image"],
-                status=request.POST["status"]
+                status=request.POST["status"],
             )
             slide.save()
             slide.image_url=slide.image.url
@@ -328,7 +328,9 @@ def posts_list(request, pk=None):
                 sub_title=request.POST["sub_title"],
                 text=request.POST["text"],
                 status=request.POST["status"],
-                author=User.objects.get(id=request.POST["id"])
+                author=User.objects.get(id=request.POST["id"]),
+                tags=request.POST['tags'],
+
             )
             if "image" in request.FILES:
                 post.image=request.FILES["image"]
@@ -359,6 +361,8 @@ def posts_list(request, pk=None):
                 post.image_url=post.image.url
             if "status" in request.POST:
                 post.status = request.POST["status"]
+            if "tags" in request.POST:
+                post.tags = request.POST['tags']
 
             post.save()
             return Response({"message": "post changed"})

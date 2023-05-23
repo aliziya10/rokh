@@ -3,10 +3,10 @@ from .models import Tag, Comments, Post, ImagePost
 from django.db import models
 
 
-class TagsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'tag',)
+# class TagsAdmin(admin.ModelAdmin):
+#     list_display = ('id', 'tag',)
 
-admin.site.register(Tag, TagsAdmin)
+admin.site.register(Tag,)
 
 
 

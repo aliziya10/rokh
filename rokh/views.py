@@ -75,15 +75,14 @@ def special_post(request,adressurl):
     # poli="id","title","sub_title","image_url","dateOfPublish","author"
 
     try:
+        tag_list = Post.objects.filter(tags__blogs=adressurl).values("tags__title")
 
-        posts = Post.objects.values("id","title","text","sub_title","image_url","persian_date","author__username").get(id=adressurl)
-
+        posts = Post.objects.values("id","title","text","sub_title","image_url","persian_date","author__username",'tags__title').get(id=adressurl)
+        d = posts
+        d['tags'] = tag_list
         # image_url=Concat(Value(base_url), F('image'), output_field=CharField()),
 
-
-
-
-        return Response(posts,status=status.HTTP_200_OK)
+        return Response(d,status=status.HTTP_200_OK)
 
     except (ValueError,Post.DoesNotExist):
         return Response({},status=status.HTTP_404_NOT_FOUND)

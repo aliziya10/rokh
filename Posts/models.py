@@ -30,6 +30,7 @@ class Post(models.Model):
     author = models.ForeignKey(User,on_delete=models.CASCADE)
     persian_date = models.CharField(max_length=10, blank=True, null=True,editable=False)
     image_url = models.TextField(null=True)
+    tags = models.ManyToManyField('Tag', verbose_name=("تگ ها"), related_name='blogs', null=True, blank=True)
 
 
 
@@ -59,15 +60,12 @@ class ImagePost(models.Model):
 
 
 class Tag(models.Model):
-    tag = models.CharField(blank=False,unique=True,max_length=25)
-    post_id=models.ManyToManyField(Post)
-
-
-    def meetings_list(self):
-        return ", ".join([m.meeting_name for m in self.tag.all()])
+    title = models.CharField(_("عنوان"), max_length=50)
+    slug = models.SlugField(_('عنوان لاتین'))
 
     def __str__(self):
-        return self.tag
+        return self.title
+
 
 
 class Comments(models.Model):

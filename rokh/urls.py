@@ -31,6 +31,7 @@ urlpatterns = [
     path('accounts/',include('accounts.urls',namespace='accounts')),
     path('layout/',layout),
     path('contactus/',contactus),
+    path('post/<int:adressurl>/',special_post)
 
 ]
 
