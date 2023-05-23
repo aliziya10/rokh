@@ -8,6 +8,7 @@ from django.utils import timezone
 from rest_framework.response import Response
 from .serializers import *
 from .models import Post,ImagePost
+from rest_framework import viewsets
 
 
 
@@ -63,9 +64,6 @@ def post_detail(request, pk=None):
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-from rest_framework import viewsets
-from .models import Post
-from .serializers import PostSerializer
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = ImagePost.objects.all()

@@ -17,7 +17,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 class ExpertiseSelializer(serializers.ModelSerializer):
     class Meta:
         model = Expertise
-        fields = ("id", 'title')
+        fields = ("id", 'title','image','text')
 
 
 class ExampleSerializer(serializers.ModelSerializer):

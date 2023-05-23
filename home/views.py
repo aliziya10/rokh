@@ -20,7 +20,7 @@ from django.db.models import Value, F, CharField
 from accounts.models import *
 from accounts.serializers import *
 
-
+base_url='https://server.rokhdental.ir'
 @api_view(["GET"])
 @permission_classes([IsAuthenticated, ])
 @user_passes_test(lambda u: u.is_staff)
@@ -498,11 +498,15 @@ def expertise_list(request, pk=None):
             expertise = Expertise.objects.all().values()
             return Response(expertise)
         else:
-            try:
-                expertise = Expertise.objects.values().get(id=pk)
-                return Response(expertise)
-            except:
-                return Response({"message": "id not found"})
+            # try:
+                a=get_object_or_404(Expertise,id=pk)
+                ex=ExpertiseSelializer(a)
+                dd=ex.data
+                dd['image']=base_url + ex.data.get('image')
+
+                return Response(dd)
+            # except:
+                # return Response({"message": "id not found"})
     elif request.method == "DELETE":
         try:
             expertise = Expertise.objects.get(id=pk).delete()
@@ -552,6 +556,14 @@ class Exampleclass(viewsets.ModelViewSet):
     queryset = Example.objects.all()
     serializer_class = ExampleSerializer
     permission_classes = [IsAuthenticated]
+
+    def partial_update(self, request, *args, **kwargs):
+        item = get_object_or_404(self.queryset, id=kwargs['pk'])
+        se = self.get_serializer(item, data=request.data, partial=True)
+        se.is_valid(raise_exception=True)
+        se.save()
+        return Response(se.data)
+
 
     def perform_create(self, serializer):
         serializer.save(doctor=self.request.user)
