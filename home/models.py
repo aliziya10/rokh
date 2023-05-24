@@ -22,7 +22,10 @@ class RokhInfo(models.Model):
     description=models.TextField()
     email=models.EmailField(default="hanousa@gmail.com")
     image=models.ImageField(null=True)
-    image_url = models.TextField(null=True)
+    image_url = models.TextField(null=True,blank=True)
+    score=models.FloatField(max_length=3,default=4.7)
+    services=models.IntegerField(default=100)
+
 
     def __str__(self):
         return self.name

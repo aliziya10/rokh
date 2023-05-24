@@ -55,7 +55,8 @@ def home(request):
 
     res['expertise']=ex
 
-
+    info=RokhInfo.objects.values()
+    res['information']:info
     # res["teammates"]=teammates.values("id","image_url","label","link")
 
 
@@ -77,7 +78,7 @@ def special_post(request,adressurl):
     try:
         tag_list = Post.objects.filter(tags__blogs=adressurl).values("tags__title")
 
-        posts = Post.objects.values("id","title","text","sub_title","image_url","persian_date","author__username",'tags__title').get(id=adressurl)
+        posts = Post.objects.values("id","title","text","sub_title","image_url","persian_date","author__username").get(id=adressurl)
         d = posts
         d['tags'] = tag_list
         # image_url=Concat(Value(base_url), F('image'), output_field=CharField()),

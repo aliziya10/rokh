@@ -264,7 +264,7 @@ def tickets_list(request, pk=None):
     #
     #
     #
-    #             return Response({"message": "comment changed"})
+    #             return Response({"message": "comment changed"}
     #         else:
     #             return Response({"message": "enter is_suggest field"})
     #     except:
@@ -463,6 +463,12 @@ def mainsettings(request):
                 info.image=request.FILES["image"]
                 info.save()
                 info.image_url=info.image.url
+
+            if "score" in request.POST:
+                info.score = request.POST["score"]
+            if "services" in request.POST:
+                info.services = request.POST["services"]
+
             info.save()
             return Response({"message": "information updated"})
         except:
