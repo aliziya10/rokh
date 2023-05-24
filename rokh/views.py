@@ -7,10 +7,11 @@ from rest_framework import status
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-
+from .serializers import *
 from home.models import *
 from Posts.models import *
 from accounts.models import *
+from rest_framework.generics import get_object_or_404
 
 @permission_classes([AllowAny])
 @api_view(["POST","GET"])
@@ -76,14 +77,26 @@ def special_post(request,adressurl):
     # poli="id","title","sub_title","image_url","dateOfPublish","author"
 
     try:
+        # tag_list = Post.objects.filter(tags__blogs=adressurl).values("tags__title")
+        #
+        # posts = Post.objects.values("id","title","text","sub_title","image_url","persian_date","author__username",'tags__title').get(id=adressurl)
+        # d = posts
+        # d['tags'] = tag_list
+        # # image_url=Concat(Value(base_url), F('image'), output_field=CharField()),
         tag_list = Post.objects.filter(tags__blogs=adressurl).values("tags__title")
+
 
         posts = Post.objects.values("id","title","text","sub_title","image_url","persian_date","author__username").get(id=adressurl)
         d = posts
         d['tags'] = tag_list
         # image_url=Concat(Value(base_url), F('image'), output_field=CharField()),
 
-        return Response(d,status=status.HTTP_200_OK)
+        posts = Post.objects.get(id=adressurl)
+        d = get_object_or_404(Post, id=adressurl)
+        se = PostSerializers(d)
+
+
+        return Response(se.data, status=status.HTTP_200_OK)
 
     except (ValueError,Post.DoesNotExist):
         return Response({},status=status.HTTP_404_NOT_FOUND)
