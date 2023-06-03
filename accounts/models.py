@@ -79,6 +79,8 @@ class Expertise(models.Model):
     image=models.ImageField(upload_to='expertise/',null=True)
     text=models.TextField(null=True,blank=True)
     image_url=models.TextField(null=True,blank=True,max_length=1000)
+    date = models.DateField(auto_now=False,auto_now_add=True)
+
 
     def __str__(self):
         return self.title
